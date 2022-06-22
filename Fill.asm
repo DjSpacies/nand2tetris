@@ -18,30 +18,70 @@
 (CHECK)
 @KBD
 D=M
-//if no key, we jump
+//if no key, we jump to white
 @WHITE
 D;JEQ
-//else we set state to black
+
+//else we check if screen is already black
 (BLACK)
 @state
-M=-1
+D=M
 @CHECK
+D;JNE
+@state
+M=-1
+//@CHECK
+@FILL
 0;JMP
-//set state to white
+
+//Check if state changed, if yes go to top, otherwise set state to white and fill.
 (WHITE)
 @state
-//should be 0
-M=0
+D=M
 @CHECK
+D;JEQ
+@state
+M=0
+@FILL
 0;JMP
 
+////////////////////
+(FILL)
+@SCREEN
+D=A
+@addr
+M=D  //addr = 16384 (screens base address)
 
-//if key keybd > 0 & state = white
-//JMP fill black
-//else if keybd = 0 & state = black; JMP FILLWHITE
-//JMP CHECK
+@8192
+D=A
+@n
+M=D // n RAM[0]
 
-//(FILLBLACK)
-//fill black
-//set state register to black
-//JMP CHECK
+@i
+M=0 // i=0
+
+(LOOP)
+@i
+D=M
+@n
+D=D-M
+
+@CHECK
+D;JGE // if i>n goto END
+
+
+//iterate through here to fill entire row
+@state
+D=M
+@addr
+A=M
+//messing here was m=d
+//M=-1 // RAM[addr]=111111111
+M=D
+
+@i
+M=M+1 // i=i +1
+@addr
+M=M+1 // addr = addr +32
+@LOOP
+0;JMP // goto LOOP
