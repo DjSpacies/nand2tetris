@@ -11,9 +11,7 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
-// Put your code here.
-
-//check keyboard press, 
+//Poll kbd register for input, 
 
 (CHECK)
 @KBD
@@ -52,6 +50,7 @@ D=A
 @addr
 M=D  //addr = 16384 (screens base address)
 
+//8192 size of the screen buffer
 @8192
 D=A
 @n
@@ -71,17 +70,18 @@ D;JGE // if i>n goto END
 
 
 //iterate through here to fill entire row
+//grab value from state 0 = white -1 = black
 @state
 D=M
 @addr
 A=M
-//messing here was m=d
-//M=-1 // RAM[addr]=111111111
+//copy state value (black or white) ino 16 bit screen buffer chunk
 M=D
-
+//repeat for entire screen
 @i
 M=M+1 // i=i +1
 @addr
 M=M+1 // addr = addr +32
+//End of program
 @LOOP
 0;JMP // goto LOOP
